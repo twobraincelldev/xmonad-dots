@@ -8,6 +8,7 @@ import System.Exit
 import XMonad
 import XMonad.Config.Desktop
 
+import XMonad.Hooks.DynamicLog (dynamicLogWithPP, wrap, xmobarPP, xmobarColor, shorten, PP(..))
 import XMonad.Hooks.ManageDocks
 
 import XMonad.Util.SpawnOnce
@@ -18,8 +19,8 @@ import qualified Data.Map        as M
 
 main = do
      session <- getEnv "DESKTOP_SESSION"
-     xmproc <- spawnPipe "xmobar /home/elio/.config/xmobar/xmobarrc"
-     xmonad $ docks $ maybe desktopConfig desktop session 
+     xmproc <- spawnPipe "xmobar /home/elio/.xmonad/xmobarrc"
+     xmonad $ docks $ maybe desktopConfig desktop session
 
 desktop _ = desktopConfig {
       -- simple stuff
@@ -40,8 +41,8 @@ desktop _ = desktopConfig {
         layoutHook         = myLayout,
         manageHook         = myManageHook,
         handleEventHook    = myEventHook,
-        logHook            = myLogHook,
-        startupHook        = myStartupHook
+        startupHook        = myStartupHook,
+        logHook            = myLogHook
     }
 
 myTerminal      = "gnome-terminal"
@@ -56,7 +57,7 @@ myClickJustFocuses = False
 
 -- Width of the window border in pixels.
 --
-myBorderWidth   = 1
+myBorderWidth   = 2
 
 -- modMask lets you specify which modkey you want to use. The default
 -- is mod1Mask ("left alt").  You may also consider using mod3Mask
@@ -74,7 +75,7 @@ myModMask       = mod4Mask
 --
 -- > workspaces = ["web", "irc", "code" ] ++ map show [4..9]
 --
-myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
+myWorkspaces    = ["dev","www","sys","4","5","6","7","8","9"]
 
 -- Border colors for unfocused and focused windows, respectively.
 --
@@ -260,7 +261,12 @@ myEventHook = mempty
 -- Perform an arbitrary action on each internal state change or X event.
 -- See the 'XMonad.Hooks.DynamicLog' extension for examples.
 --
-myLogHook = return ()
+color01 = "#ffffff"
+myLogHook = dynamicLogWithPP $ xmobarPP
+    {
+        ppCurrent = xmobarColor color01 "" . wrap
+                ("<box type=Bottom width=2 mb=2 color=" ++ color01 ++ ">") "</box"
+    }
 
 ------------------------------------------------------------------------
 -- Startup hook
